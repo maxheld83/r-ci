@@ -30,6 +30,7 @@ ENV R_REMOTES_STANDALONE=true
 RUN Rscript -e "remotes::install_version('curl', '3.3')"
 RUN Rscript -e "remotes::install_version('pkgbuild', '1.0.3')"
 RUN Rscript -e "remotes::install_version('git2r', '0.25.2')"
+# standalone is no longer needed
 RUN unset R_REMOTES_STANDALONE
 RUN Rscript -e "remotes::install_version('devtools', '2.0.2')"
 RUN Rscript -e "remotes::install_version('pkgdown', '1.3.0')"
@@ -38,12 +39,13 @@ RUN Rscript -e "remotes::install_version('covr', '3.2.1')"
 RUN Rscript -e "remotes::install_version('rcmdcheck', '1.3.3')"
 RUN Rscript -e "remotes::install_version('pak', '0.1.2')"
 RUN Rscript -e "remotes::install_version('testthat', '2.1.1')"
+# helpful for modifying local .libPaths() etc.
+RUN Rscript -e "remotes::install_version('withr', '2.1.2')"
 
 # let downstream img start with unchanged env vars
 # ... and without installed dev helpers on `.libPaths()`
 RUN unset R_LIBS
 
-# TODO delete these
 # these are for pensieve only for testing
 # TODO delete these once https://github.com/r-lib/ghactions/issues/164 and https://github.com/r-lib/ghactions/issues/75
 RUN apt-get update \

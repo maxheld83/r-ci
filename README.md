@@ -28,6 +28,7 @@ Dockerfiles are based on a [rhub/debian-gcc-release](https://github.com/r-hub/rh
 - [rcmdcheck](https://github.com/r-lib/rcmdcheck)
 - [pak](https://pak.r-lib.org)
 - [testthat](https://testthat.r-lib.org)
+- [withr](http://withr.r-lib.org)
 
 
 ## Isolation
