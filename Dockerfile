@@ -54,4 +54,4 @@ RUN apt-get update \
 # let downstream img start with unchanged env vars
 # ... and without installed dev helpers on `.libPaths()`
 # unset does not work https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
-ENV R_LIBS=""
+ONBUILD ENV R_LIBS=""
