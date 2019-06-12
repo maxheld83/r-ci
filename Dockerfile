@@ -27,6 +27,7 @@ RUN apt-get update \
   libpoppler-cpp-dev \
   && apt-get clean -y
 
+# set shell to Rscript to make syntax shorter
 SHELL ["usr/bin/Rscript", "-e"]
 # write to $R_LIBS_DEV_HELPERS
 ENV R_LIBS="$R_LIBS_DEV_HELPERS"
@@ -55,4 +56,5 @@ RUN remotes::install_version('withr', '2.1.2')
 # let downstream img start with unchanged env vars
 # ... and without installed dev helpers on `.libPaths()`
 # unset does not work https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+ONBUILD SHELL ["/bin/sh", "-c"]
 ONBUILD ENV R_LIBS=""
