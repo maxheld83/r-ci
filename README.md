@@ -56,13 +56,16 @@ The development helpers in this image are all installed to `/usr/lib/R/dev-helpe
 
 To call any of these packages in an R script, you would need to attach them to the search tree, and then detach them again.
 
+Unfortunately `loadNamespace()` does not pass on `lib.loc` when recursively loading the dependencies of `package`.
+This image ships with a little helper function sourced from `/loadNamespace2()` which does that, defaulting to `lib.loc = Sys.getenv("R_LIBS_DEV_HELPERS")`.
+
+You can easily load a development helper like so:
+
 ```
-loadNamespace(package = "remotes", lib.loc = Sys.getenv("R_LIBS_DEV_HELPERS"))
+loadNamespace2(package = "remotes")
 remotes::install_deps()
 unloadNamespace(ns = "remotes")
 ```
-
-**TODO**: This is a little cumbersome and might later be wrapped into a *withr*-style helper function ([#1](https://github.com/maxheld83/r-ci/issues/1))
 
 This example also illustrates an advantage of isolation.
 Had *remotes* been on the package search path `.libPaths()` when *calling* `remotes::install_deps()`, any packages that are dependencies of *both* the in-dev package in question *and* remotes would not have been installed (again).

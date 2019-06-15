@@ -56,5 +56,11 @@ RUN remotes::install_version('withr', '2.1.2')
 # let downstream img start with unchanged env vars
 # ... and without installed dev helpers on `.libPaths()`
 # unset does not work https://docs.docker.com/develop/develop-images/dockerfile_best-practices/
+# unset r-libs to enable below test
+ENV R_LIBS=""
+
+# helper to make it easier to load dev helper pkgs
+COPY loadNamespace2.R /loadNamespace2.R
+COPY test_loadNamespace2.R /test_loadNamespace2.R
+
 ONBUILD SHELL ["/bin/sh", "-c"]
-ONBUILD ENV R_LIBS=""
