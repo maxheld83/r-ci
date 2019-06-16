@@ -54,22 +54,57 @@ This image implements several practices to strengthen this isolation.
 
 The development helpers in this image are all installed to `/usr/lib/R/dev-helpers-library` (stored in `R_LIBS_DEV_HELPERS`), a directory that is *not* usually on the `.libPaths()` search tree.
 
-To call any of these packages in an R script, you would need to attach them to the search tree, and then detach them again.
+To make the `R_LIBS_DEV_HELPERS` available, you can:
 
-Unfortunately `loadNamespace()` does not pass on `lib.loc` when recursively loading the dependencies of `package`.
-This image ships with a little helper function sourced from `/loadNamespace2()` which does that, defaulting to `lib.loc = Sys.getenv("R_LIBS_DEV_HELPERS")`.
-
-You can easily load a development helper like so:
-
-```
-loadNamespace2(package = "remotes")
-remotes::install_deps()
-unloadNamespace(ns = "remotes")
-```
-
-This example also illustrates an advantage of isolation.
-Had *remotes* been on the package search path `.libPaths()` when *calling* `remotes::install_deps()`, any packages that are dependencies of *both* the in-dev package in question *and* remotes would not have been installed (again).
-Depending on how the CI/CD scripts are set up, this can cause problems.
+1. `loadNamespace()` individual packages.
+    Unfortunately `loadNamespace()` does not pass on `lib.loc` when recursively loading the dependencies of `package`.
+    This image ships with a little helper function sourced from `/loadNamespace2()` which does that, defaulting to `lib.loc = Sys.getenv("R_LIBS_DEV_HELPERS")`.
+    
+    You can use it like this:
+    
+    ```
+    loadNamespace2(package = "remotes")
+    remotes::install_deps()
+    unloadNamespace(ns = "remotes")
+    ```
+    
+    This example also illustrates an advantage of isolation.
+    Had *remotes* been on the package search path `.libPaths()` when *calling* `remotes::install_deps()`, any packages that are dependencies of *both* the in-dev package in question *and* remotes would not have been installed (again).
+    Depending on how the CI/CD scripts are set up, this can cause problems.
+    
+    This method also comes with some limitations:
+    
+    - The attachment of the development helper via `loadNamespace2()` will persist throughout the call stack.
+        That means that calls of, say, *devtools* *inside* the in-development package would use whichever version of remotes was on `R_LIBS_DEV_HELPERS` and disregard what the 
+    - The attachment does not persist across sessions.
+        If the development helper starts a new R session (such as by using *callr*) the side effet of `loadNamespace2()` is lost and the development helper can no longer be found.
+2. You can wrap your call with *withr*:
+    
+    ```
+    withr::with_libpaths(
+      new = Sys.getenv("R_LIBS_DEV_HELPERS"),
+      action = "suffix", 
+      code = pkgdown::build_site()
+    )
+    ```
+    
+    This method will put *all* development helpers on the library search tree, not just *some* as in the above method.
+    
+3. You can prefix your `.libPaths()` by setting an `R_LIBS` environment variable.
+    
+    In the command line:
+    
+    ```
+    export R_LIBS="$R_LIBS_DEV_HELPERS"
+    ```
+    
+    Or set it your `Dockerfile`:
+    
+    ```
+    ENV R_LIBS="$R_LIBS_DEV_HELPERS"
+    ```
+    
+    This method will put *all* development helpers on the library search tree and let them persist until `R_LIBS` is un/reset.
 
 
 ### Call Tree
