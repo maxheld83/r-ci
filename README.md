@@ -89,6 +89,7 @@ To make the `R_LIBS_DEV_HELPERS` available, you can:
     ```
     
     This method will put *all* development helpers on the library search tree, not just *some* as in the above method.
+    The the changed `.libPaths()` also appears to persist across R sessions.
     
 3. You can prefix your `.libPaths()` by setting an `R_LIBS` environment variable.
     
