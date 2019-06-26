@@ -7,6 +7,8 @@ LABEL "maintainer"="Maximilian Held <info@maxheld.de>"
 LABEL "repository"="https://github.com/maxheld83/r-ci"
 LABEL "homepage"="https://github.com/maxheld83/r-ci"
 
+COPY .Rprofile "$HOME"/.Rprofile
+
 # location for R development helpers
 ENV R_LIBS_DEV_HELPERS="/usr/lib/R/dev-helpers-library"
 RUN mkdir -p "$R_LIBS_DEV_HELPERS"
