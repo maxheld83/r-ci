@@ -56,29 +56,7 @@ The development helpers in this image are all installed to `/usr/lib/R/dev-helpe
 
 To make the `R_LIBS_DEV_HELPERS` available, you can:
 
-1. `loadNamespace()` individual packages.
-    Unfortunately `loadNamespace()` does not pass on `lib.loc` when recursively loading the dependencies of `package`.
-    This image ships with a little helper function sourced from `/loadNamespace2()` which does that, defaulting to `lib.loc = Sys.getenv("R_LIBS_DEV_HELPERS")`.
-    
-    You can use it like this:
-    
-    ```
-    loadNamespace2(package = "remotes")
-    remotes::install_deps()
-    unloadNamespace(ns = "remotes")
-    ```
-    
-    This example also illustrates an advantage of isolation.
-    Had *remotes* been on the package search path `.libPaths()` when *calling* `remotes::install_deps()`, any packages that are dependencies of *both* the in-dev package in question *and* remotes would not have been installed (again).
-    Depending on how the CI/CD scripts are set up, this can cause problems.
-    
-    This method also comes with some limitations:
-    
-    - The attachment of the development helper via `loadNamespace2()` will persist throughout the call stack.
-        That means that calls of, say, *devtools* *inside* the in-development package would use whichever version of remotes was on `R_LIBS_DEV_HELPERS` and disregard what the 
-    - The attachment does not persist across sessions.
-        If the development helper starts a new R session (such as by using *callr*) the side effet of `loadNamespace2()` is lost and the development helper can no longer be found.
-2. You can wrap your call with *withr*:
+1. You can wrap your call with *withr*:
     
     ```
     withr::with_libpaths(
@@ -91,7 +69,7 @@ To make the `R_LIBS_DEV_HELPERS` available, you can:
     This method will put *all* development helpers on the library search tree, not just *some* as in the above method.
     The the changed `.libPaths()` also appears to persist across R sessions.
     
-3. You can prefix your `.libPaths()` by setting an `R_LIBS` environment variable.
+2. You can prefix or suffix your `.libPaths()` by setting an `R_LIBS` environment variable.
     
     In the command line:
     

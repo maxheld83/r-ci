@@ -1,5 +1,4 @@
 **
-!loadNamespace2.R
-!test_loadNamespace2.R
+!test_r-ci.R
 !README.md
 !.Rprofile

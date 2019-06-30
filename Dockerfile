@@ -11,7 +11,7 @@ COPY .Rprofile "$HOME"/.Rprofile
 
 # location for R development helpers
 ENV R_LIBS_DEV_HELPERS="/usr/lib/R/dev-helpers-library"
-RUN mkdir -p "$R_LIBS_DEV_HELPERS"
+RUN mkdir --parents $R_LIBS_DEV_HELPERS
 
 # system dependencies for frequently used R development helper Packages
 RUN apt-get update \
@@ -31,7 +31,7 @@ RUN apt-get update \
 
 # set shell to Rscript to make syntax shorter
 SHELL ["usr/bin/Rscript", "-e"]
-# write to $R_LIBS_DEV_HELPERS
+# install to $R_LIBS_DEV_HELPERS
 ENV R_LIBS="$R_LIBS_DEV_HELPERS"
 # bootstrap versioned remotes
 RUN source('https://raw.githubusercontent.com/r-lib/remotes/master/install-github.R')[['value']]('r-lib/remotes@v2.0.4')
@@ -61,8 +61,6 @@ RUN remotes::install_version('withr', '2.1.2')
 # unset r-libs to enable below test
 ENV R_LIBS=""
 
-# helper to make it easier to load dev helper pkgs
-COPY loadNamespace2.R /loadNamespace2.R
-COPY test_loadNamespace2.R /test_loadNamespace2.R
+COPY test_r-ci.R /test_r-ci.R
 
 ONBUILD SHELL ["/bin/sh", "-c"]

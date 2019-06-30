@@ -16,9 +16,9 @@ action "tag" {
   needs = "build"
 }
 
-action "test loadNamespace2 helper" {
+action "test image" {
   uses = "actions/docker/cli@09314e9366705e146a0e3ae8d39511e4028c1bdd"
-  args = "run --entrypoint Rscript r-ci test_loadNamespace2.R"
+  args = "run --entrypoint Rscript r-ci test_r-ci.R"
   needs = "build"
 }
 
@@ -27,7 +27,7 @@ action "Filter Not Act" {
   args = "not actor nektos/act"
   needs = [
     "tag",
-    "test loadNamespace2 helper"
+    "test image"
   ]
 }
 
